@@ -25,9 +25,11 @@ def analyze():
 
     # Summarization
     if action == 'summarize':
-        summary = summarize_text(text, use_pegasus=True)  # 🔥 Now uses Pegasus
-        return render_template('result.html', display="Summarized Text", result=summary)
-
+        use_pegasus = 'pegasus' in request.form  # ✅ Fix: read checkbox value properly
+        summary = summarize_text(text, use_pegasus=use_pegasus)
+        method_used = "Pegasus LLM" if use_pegasus else "Frequency-Based"
+        display_text = f"Summarized Text ({method_used})"
+        return render_template('result.html', display=display_text, result=summary)
 
     # Sentiment Analysis + Chart
     elif action == 'sentiment':

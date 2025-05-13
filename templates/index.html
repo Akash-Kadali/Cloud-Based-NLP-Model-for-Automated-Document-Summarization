@@ -29,6 +29,9 @@
     cursor: pointer;
   ">🌗</button>
 
+  <!-- Toast for alerts -->
+  <div id="toast" style="display: none;"></div>
+
   <header>
     <div class="header-inner">
       <h1>🧠 Text Summarizer</h1>
@@ -40,14 +43,16 @@
 
   <main>
     <section class="container hero">
-      <form method="POST" action="/analyze" enctype="multipart/form-data">
+      <form id="mainForm" method="POST" action="/analyze" enctype="multipart/form-data" onsubmit="showLoader()">
 
         <label for="text">💬 Enter your text</label>
-        <textarea name="text" id="text" placeholder="Paste or type the content to be summarized..."></textarea>
+        <textarea name="text" id="text" placeholder="Paste or type the content to be summarized..." oninput="updateCount()"></textarea>
+        <div id="count" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">🧾 0 characters | 0 words</div>
 
         <div class="file-upload">
           <label for="files">📎 Upload PDF</label>
-          <input type="file" name="pdf_file" accept=".pdf" id="files">
+          <input type="file" name="pdf_file" accept=".pdf" id="files" onchange="fileName()" />
+          <span id="fileLabel" style="margin-left: 0.5rem;"></span>
           <button type="button" class="remove-btn" onclick="removeFile()">❌</button>
         </div>
 
@@ -65,8 +70,19 @@
           </label>
         </div>
 
-        <input type="submit" class="primary-btn" value="🚀 Perform Action">
+        <input type="submit" class="primary-btn" value="🚀 Perform Action" />
+
+        <div id="loading" style="margin-top: 1rem; display: none;">🔄 Processing... Please wait.</div>
       </form>
+
+      <!-- Result Area -->
+      <div id="output" style="margin-top: 2rem; display: none;">
+        <h3>📤 Output</h3>
+        <div id="output-content"></div>
+        <div id="export-options" style="margin-top: 1rem;">
+          <button onclick="downloadResult()">⬇️ Download Result</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -76,7 +92,19 @@
 
   <script>
     function removeFile() {
-      document.getElementById("files").value = "";
+      const fileInput = document.getElementById("files");
+      fileInput.value = "";
+      document.getElementById("fileLabel").innerText = "";
+    }
+
+    function fileName() {
+      const fileInput = document.getElementById("files");
+      const label = document.getElementById("fileLabel");
+      if (fileInput.files.length > 0) {
+        label.innerText = `📄 ${fileInput.files[0].name}`;
+      } else {
+        label.innerText = "";
+      }
     }
 
     function toggleTheme() {
@@ -91,9 +119,45 @@
       toggleDiv.style.display = value === "summarize" ? "block" : "none";
     }
 
-    // Ensure it's only shown on summarize when page loads
+    function showLoader() {
+      document.getElementById("loading").style.display = "block";
+    }
+
+    function updateCount() {
+      const text = document.getElementById("text").value;
+      const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+      const charCount = text.length;
+      document.getElementById("count").innerText = `🧾 ${charCount} characters | ${wordCount} words`;
+    }
+
+    function downloadResult() {
+      const output = document.getElementById("output-content").innerText;
+      const blob = new Blob([output], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "output.txt";
+      a.click();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.display = "block";
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.background = "#ff5f5f";
+      toast.style.color = "white";
+      toast.style.padding = "0.75rem 1.25rem";
+      toast.style.borderRadius = "8px";
+      toast.style.zIndex = 1000;
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
+
     window.onload = () => {
       togglePegasusOption(document.getElementById("action").value);
+      updateCount();
     };
   </script>
 </body>

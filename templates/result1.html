@@ -8,13 +8,13 @@
   <!-- Google Sans Font -->
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Modern StyleSheet -->
+  <!-- Style -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons.png') }}">
 </head>
 
 <body id="page" data-theme="light">
-  <!-- Animated Background Blob & Particle Canvas -->
+  <!-- Background -->
   <div class="blob"></div>
   <canvas id="particles-js" style="position: fixed; inset: 0; z-index: -4;"></canvas>
 
@@ -29,6 +29,9 @@
     font-size: 1.5rem;
     cursor: pointer;">🌗</button>
 
+  <!-- Toast Notification -->
+  <div id="toast" style="display: none;"></div>
+
   <header>
     <h1>☁️ Word Cloud Result</h1>
     <p style="font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem;">
@@ -38,17 +41,23 @@
 
   <main>
     <section class="container result" style="text-align: center;">
-      <img src="{{ url_for('static', filename='images/wordcloud.png') }}"
+      <img id="wordcloudImg"
+           src="{{ url_for('static', filename='images/wordcloud.png') }}"
            alt="Word Cloud Result"
            style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); margin-top: 1rem;" />
+
+      <div class="output-actions" style="margin-top: 1.5rem;">
+        <button onclick="downloadImage()">⬇️ Download PNG</button>
+        <button onclick="copyImageLink()">📋 Copy Image Link</button>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 Text Summarizer by Sri Akash Kadali</p>
+    <p>&copy; 2025 Text Summarizer by Sri Akash Kadali · Built with ❤️ and AI</p>
   </footer>
 
-  <!-- Theme Toggle Logic -->
+  <!-- Scripts -->
   <script>
     function toggleTheme() {
       const html = document.documentElement;
@@ -56,9 +65,41 @@
       html.setAttribute('data-theme', isDark ? 'light' : 'dark');
       document.getElementById('page').setAttribute('data-theme', isDark ? 'light' : 'dark');
     }
+
+    function downloadImage() {
+      const img = document.getElementById("wordcloudImg");
+      const link = document.createElement("a");
+      link.href = img.src;
+      link.download = "wordcloud.png";
+      link.click();
+      showToast("✅ Word Cloud downloaded");
+    }
+
+    function copyImageLink() {
+      const img = document.getElementById("wordcloudImg");
+      navigator.clipboard.writeText(img.src)
+        .then(() => showToast("✅ Image link copied!"))
+        .catch(() => showToast("❌ Failed to copy image link"));
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.display = "block";
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.background = "#60a5fa";
+      toast.style.color = "#fff";
+      toast.style.padding = "0.75rem 1.25rem";
+      toast.style.borderRadius = "8px";
+      toast.style.zIndex = 1000;
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
   </script>
 
-  <!-- tsParticles for floating effects -->
+  <!-- tsParticles Animation -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
   <script>
     tsParticles.load("particles-js", {

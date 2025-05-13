@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Text Summarizer – Result</title>
 
-  <!-- Google Font and Styles -->
+  <!-- Fonts and Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons.png') }}">
 </head>
 
 <body id="page" data-theme="light">
-  <!-- Glowing blob + particle canvas -->
+  <!-- Background -->
   <div class="blob"></div>
   <canvas id="particles-js" style="position: fixed; inset: 0; z-index: -4;"></canvas>
 
-  <!-- Theme toggle button -->
+  <!-- Theme Toggle -->
   <button onclick="toggleTheme()" title="Toggle Theme" style="
     position: fixed;
     top: 1rem;
@@ -27,6 +27,9 @@
     font-size: 1.5rem;
     cursor: pointer;">🌗</button>
 
+  <!-- Toast -->
+  <div id="toast" style="display: none;"></div>
+
   <header>
     <h1>🧠 Text Summarizer Result</h1>
     <p style="font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem;">
@@ -36,16 +39,23 @@
 
   <main>
     <section class="container result">
-      <h2>{{ display }}</h2>
-      <p><strong>{{ result }}</strong></p>
+      <div class="output-card">
+        <h2>{{ display }}</h2>
+        <pre id="resultText">{{ result }}</pre>
+
+        <div class="output-actions">
+          <button onclick="copyToClipboard()">📋 Copy</button>
+          <button onclick="downloadOutput()">⬇️ Download</button>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 Text Summarizer by Sri Akash Kadali</p>
+    <p>&copy; 2025 Text Summarizer by Sri Akash Kadali · Built with ❤️ and AI</p>
   </footer>
 
-  <!-- Theme Toggle Script -->
+  <!-- Scripts -->
   <script>
     function toggleTheme() {
       const html = document.documentElement;
@@ -53,9 +63,42 @@
       html.setAttribute('data-theme', isDark ? 'light' : 'dark');
       document.getElementById('page').setAttribute('data-theme', isDark ? 'light' : 'dark');
     }
+
+    function copyToClipboard() {
+      const text = document.getElementById("resultText").innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("✅ Result copied to clipboard");
+      }).catch(() => {
+        showToast("❌ Failed to copy");
+      });
+    }
+
+    function downloadOutput() {
+      const text = document.getElementById("resultText").innerText;
+      const blob = new Blob([text], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "summary_result.txt";
+      link.click();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.display = "block";
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.background = "#60a5fa";
+      toast.style.color = "#fff";
+      toast.style.padding = "0.75rem 1.25rem";
+      toast.style.borderRadius = "8px";
+      toast.style.zIndex = 1000;
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
   </script>
 
-  <!-- Particle Background Script -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
   <script>
     tsParticles.load("particles-js", {

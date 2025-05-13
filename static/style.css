@@ -118,7 +118,6 @@ main {
   grid-template-columns: 1fr min(1200px, 90%) 1fr;
   margin-top: 2rem;
 }
-
 main > * {
   grid-column: 2;
 }
@@ -235,6 +234,67 @@ footer {
   background: transparent;
   border-top: 1px solid var(--input-border);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Output Card */
+.output-card {
+  background: var(--card);
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.06);
+  margin-top: 1.5rem;
+}
+.output-card pre {
+  white-space: pre-wrap;
+  font-family: monospace;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Action Buttons */
+.output-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+.output-actions button {
+  background: var(--btn-bg);
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.3s ease;
+}
+.output-actions button:hover {
+  background: var(--btn-hover);
+}
+
+/* Toast Notification */
+#toast {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #60a5fa;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  z-index: 1000;
+  font-size: 0.9rem;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Chart */
+canvas {
+  max-width: 100%;
+  height: auto !important;
 }
 
 /* Responsive */

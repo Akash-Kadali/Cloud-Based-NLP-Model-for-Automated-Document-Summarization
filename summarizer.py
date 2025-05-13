@@ -19,18 +19,20 @@ nltk.download('vader_lexicon')
 
 
 # ✅ Frequency-Based Text Summarization
-def summarize_text(text, use_pegasus=False, num_sentences=2):
+def summarize_text(text, use_pegasus=False, num_sentences=5):
     if use_pegasus:
         try:
             url = "https://akash-kadali--pegasus-api-fastapi-app.modal.run/summarize"
             response = requests.post(url, json={"text": text})
             if response.status_code == 200:
-                return response.json().get("summary", "No summary returned.")
+                summary = response.json().get("summary", "No summary returned.")
+                # Limit to top 5 lines
+                sentences = sent_tokenize(summary)
+                return " ".join(sentences[:5])
             return "Pegasus API error."
         except Exception as e:
             return f"Pegasus API call failed: {e}"
     else:
-        # Frequency-Based fallback
         sentences = sent_tokenize(text)
         words = word_tokenize(text.lower())
         stop_words = set(stopwords.words('english'))
@@ -45,8 +47,11 @@ def summarize_text(text, use_pegasus=False, num_sentences=2):
                 if word in freq_dist:
                     sentence_scores[sentence] = sentence_scores.get(sentence, 0) + freq_dist[word] / max_freq
 
-        ranked_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-        return TreebankWordDetokenizer().detokenize(ranked_sentences)
+        ranked_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)
+        cleaned_sentences = [s.strip() for s in ranked_sentences if len(s.strip().split()) > 3]
+        return "\n".join(cleaned_sentences[:5])
+
+
 
 # ✅ Sentiment Analysis (returns just scores dict)
 def analyze_sentiment(text):
