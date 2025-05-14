@@ -63,4 +63,5 @@ def get_sentiment_label(scores):
         return f"Neutral : {scores}"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # use PORT from Render if available
+    app.run(debug=True, host='0.0.0.0', port=port)
